@@ -1,4 +1,12 @@
-// dllmain.cpp : DLL アプリケーションのエントリ ポイントを定義します。
+/*
+dllmain.cpp
+
+Copyright (c) 2017 Palmtree Software
+
+This software is released under the MIT License.
+https://opensource.org/licenses/MIT
+*/
+
 #include "stdafx.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,

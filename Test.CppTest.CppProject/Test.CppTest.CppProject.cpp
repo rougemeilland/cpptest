@@ -1,5 +1,11 @@
-// Test.CppTest.CppProject.cpp : DLL アプリケーション用にエクスポートされる関数を定義します。
-//
+/*
+Test.CppTest.CppProject.cpp
+
+Copyright (c) 2017 Palmtree Software
+
+This software is released under the MIT License.
+https://opensource.org/licenses/MIT
+*/
 
 // CPUIDについて:
 //   http://www.wdic.org/w/SCI/cpuid%20%28x86%29
