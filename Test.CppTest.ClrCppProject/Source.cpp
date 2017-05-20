@@ -11,6 +11,7 @@
 #include <malloc.h>
 #include <intrin.h>
 #include <immintrin.h>
+#include "Source.h"
 
 /*
 unsigned __int64 _byteswap_uint64(_In_ unsigned __int64) // バイトオーダー変換(64bit)
@@ -149,32 +150,160 @@ __int64 _InterlockedXor64_np(__int64 volatile * _Value, __int64 _Mask) // 64ビッ
 
 extern "C"
 {
-    
+
 #ifdef _IX86
-    static const int __ALIGNMENT = alignof(__int32);
+    typedef unsigned __int32 __UNIT_TYPE;
 #elif defined(_IX64)
-    static const int __ALIGNMENT = alignof(__int64);
+    typedef unsigned __int64 __UNIT_TYPE;
 #else
+    // undefined
 #endif
 
-    void* _AllocateBuffer(size_t size, size_t* actual_size)
+    __UNIT_TYPE* _AllocateBuffer(size_t size)
     {
-        *actual_size = (size + __ALIGNMENT - 1) / __ALIGNMENT * __ALIGNMENT;
-        return (_aligned_malloc(*actual_size, __ALIGNMENT));
+        if (size == 0)
+            return ((__UNIT_TYPE*)_aligned_malloc(sizeof(__UNIT_TYPE), alignof(__UNIT_TYPE)));
+        else
+            return ((__UNIT_TYPE*)_aligned_malloc((size + sizeof(__UNIT_TYPE) - 1) / sizeof(__UNIT_TYPE) * sizeof(__UNIT_TYPE), alignof(__UNIT_TYPE)));
     }
 
-    void* _FreeBuffer(size_t size)
+    __UNIT_TYPE* _AllocateZeroClearedBuffer(size_t size)
     {
-        return (_aligned_malloc((size + __ALIGNMENT - 1) / __ALIGNMENT * __ALIGNMENT, __ALIGNMENT));
+        if (size == 0)
+            return ((__UNIT_TYPE*)_aligned_malloc(sizeof(__UNIT_TYPE), alignof(__UNIT_TYPE)));
+        else
+        {
+            size_t unit_count = (size + sizeof(__UNIT_TYPE) - 1) / sizeof(__UNIT_TYPE);
+            size_t actual_size = unit_count * sizeof(__UNIT_TYPE);
+            __UNIT_TYPE* buffer = (__UNIT_TYPE*)_aligned_malloc(actual_size, alignof(__UNIT_TYPE));
+#ifdef _IX64
+            __stosq(buffer, 0, unit_count);
+#else // _IX64
+            __stosd((unsigned long *)buffer, 0, unit_count);
+#endif // _IX64
+            return (buffer);
+        }
     }
+
+    void _FreeBuffer(__UNIT_TYPE* buffer)
+    {
+        _aligned_free(buffer);
+    }
+
+    int _UM_SetUint32Value_Imp(void * buffer, size_t * buffer_size, unsigned int value)
+    {
+        if (buffer == NULL)
+            return (FALSE);
+        if (buffer_size == NULL)
+            return (FALSE);
+        size_t actual_size = sizeof(__UNIT_TYPE) > sizeof(unsigned __int32) ? sizeof(__UNIT_TYPE) : sizeof(unsigned __int32);
+        if (*buffer_size < actual_size)
+            return (FALSE);
+        size_t word_count = actual_size / sizeof(unsigned __int32);
+        *buffer_size = actual_size;
+        unsigned __int32* p = (unsigned __int32*)buffer;
+        p[0] = value;
+        switch (word_count)
+        {
+        case 4:
+            p[3] = 0;
+        case 3:
+            p[2] = 0;
+        case 2:
+            p[1] = 0;
+        case 1:
+            break;
+        default:
+            __stosd((PDWORD)&p[1], 0, word_count - 1);
+            break;
+        }
+        return (TRUE);
+    }
+
+    int _UM_SetUint64Value_Imp_x86(void * buffer, size_t * buffer_size, unsigned int value_high, unsigned int value_low)
+    {
+        if (buffer == NULL)
+            return (FALSE);
+        if (buffer_size == NULL)
+            return (FALSE);
+        size_t actual_size = sizeof(__UNIT_TYPE) > sizeof(unsigned __int32) * 2 ? sizeof(__UNIT_TYPE) : sizeof(unsigned __int32) * 2;
+        if (*buffer_size < actual_size)
+            return (FALSE);
+        size_t word_count = actual_size / sizeof(unsigned __int32);
+        *buffer_size = actual_size;
+        unsigned __int32* p = (unsigned __int32*)buffer;
+        p[0] = value_low;
+        p[1] = value_high;
+        switch (word_count)
+        {
+        case 4:
+            p[3] = 0;
+        case 3:
+            p[2] = 0;
+        case 2:
+        case 1:
+            break;
+        default:
+            __stosd((PDWORD)&p[2], 0, word_count - 2);
+            break;
+        }
+        return (TRUE);
+    }
+
+#ifdef _IX64
+    int _UM_SetUint64Value_Imp_x64(void * buffer, size_t * buffer_size, unsigned long long value)
+    {
+        if (buffer == NULL)
+            return (FALSE);
+        if (buffer_size == NULL)
+            return (FALSE);
+        size_t actual_size = sizeof(__UNIT_TYPE) > sizeof(unsigned __int64) ? sizeof(__UNIT_TYPE) : sizeof(unsigned __int64);
+        if (*buffer_size < actual_size)
+            return (FALSE);
+        size_t word_count = actual_size / sizeof(unsigned __int64);
+        *buffer_size = actual_size;
+        unsigned __int64* p = (unsigned __int64*)buffer;
+        p[0] = value;
+        switch (word_count)
+        {
+        case 4:
+            p[3] = 0;
+        case 3:
+            p[2] = 0;
+        case 2:
+            p[1] = 0;
+        case 1:
+            break;
+        default:
+            __stosq((PDWORD64)&p[1], 0, word_count - 1);
+            break;
+        }
+        return (TRUE);
+    }
+#endif // _IX64
 
     // ・x, y, zはNULLではないこと。
     // ・x, y, zは unsigned __int32の アライメント条件を満たしていること。
     // ・x_lengthおよびy_lengthは sizeof(unsigned long) の倍数であること。
     // ・x_length >= y_length であること。
     // ・z_lengthはNULLではないこと。
-    void __stdcall _UM_Add_ADC32(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
+    int __stdcall _UM_Add_ADC32(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
+#if _DEBUG
+        if (x == NULL)
+            return (FALSE);
+        if (y == NULL)
+            return (FALSE);
+        if (z == NULL)
+            return (FALSE);
+        if (z_length == NULL)
+            return (FALSE);
+        if (x_length < y_length)
+            return (FALSE);
+        if (*z_length < x_length)
+            return (FALSE);
+        unsigned __int32* z_ptr_limit = (unsigned __int32*)((unsigned char*)z + *z_length);
+#endif // _DEBUG
         unsigned __int32* x_ptr = (unsigned __int32*)x;
         unsigned __int32* y_ptr = (unsigned __int32*)y;
         unsigned __int32* z_ptr = (unsigned __int32*)z;
@@ -222,6 +351,10 @@ extern "C"
         }
         if (carry)
         {
+#if _DEBUG
+            if (z_ptr >= z_ptr_limit)
+                return (FALSE);
+#endif // _DEBUG
             *z_ptr = 1;
             ++z_ptr;
         }
@@ -233,9 +366,8 @@ extern "C"
         else
         {
         }
-        while (z_ptr > z && *(z_ptr - 1) == 0)
-            --z_ptr;
-        *z_length = (z_ptr - (unsigned __int32 *)z) * sizeof(unsigned __int32);
+        *z_length = (unsigned char*)z_ptr - (unsigned char*)z;
+        return (TRUE);
     }
 
     // ・x, y, zはNULLではないこと。
@@ -243,8 +375,23 @@ extern "C"
     // ・x_lengthおよびy_lengthは sizeof(unsigned __int32) の倍数であること。
     // ・x_length >= y_length であること。
     // ・z_lengthはNULLではないこと。
-    void __stdcall _UM_Add_ADCX32(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
+    int __stdcall _UM_Add_ADCX32(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
+#if _DEBUG
+        if (x == NULL)
+            return (FALSE);
+        if (y == NULL)
+            return (FALSE);
+        if (z == NULL)
+            return (FALSE);
+        if (z_length == NULL)
+            return (FALSE);
+        if (x_length < y_length)
+            return (FALSE);
+        if (*z_length < x_length)
+            return (FALSE);
+        unsigned __int32* z_ptr_limit = (unsigned __int32*)((unsigned char*)z + *z_length);
+#endif // _DEBUG
         unsigned __int32* x_ptr = (unsigned __int32*)x;
         unsigned __int32* y_ptr = (unsigned __int32*)y;
         unsigned __int32* z_ptr = (unsigned __int32*)z;
@@ -292,6 +439,10 @@ extern "C"
         }
         if (carry)
         {
+#if _DEBUG
+            if (z_ptr >= z_ptr_limit)
+                return (FALSE);
+#endif // _DEBUG
             *z_ptr = 1;
             ++z_ptr;
         }
@@ -303,9 +454,8 @@ extern "C"
         else
         {
         }
-        while (z_ptr > z && *(z_ptr - 1) == 0)
-            --z_ptr;
-        *z_length = (z_ptr - (unsigned __int32 *)z) * sizeof(unsigned __int32);
+        *z_length = (unsigned char*)z_ptr - (unsigned char*)z;
+        return (TRUE);
     }
 
 #ifdef _IX64
@@ -314,8 +464,23 @@ extern "C"
     // ・x_lengthおよびy_lengthは sizeof(unsigned __int64) の倍数であること。
     // ・x_length >= y_length であること。
     // ・z_lengthはNULLではないこと。
-    void __stdcall _UM_Add_ADC64(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
+    int __stdcall _UM_Add_ADC64(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
+#if _DEBUG
+        if (x == NULL)
+            return (FALSE);
+        if (y == NULL)
+            return (FALSE);
+        if (z == NULL)
+            return (FALSE);
+        if (z_length == NULL)
+            return (FALSE);
+        if (x_length < y_length)
+            return (FALSE);
+        if (*z_length < x_length)
+            return (FALSE);
+        unsigned __int64* z_ptr_limit = (unsigned __int64*)((unsigned char*)z + *z_length);
+#endif // _DEBUG
         unsigned __int64* x_ptr = (unsigned __int64*)x;
         unsigned __int64* y_ptr = (unsigned __int64*)y;
         unsigned __int64* z_ptr = (unsigned __int64*)z;
@@ -363,6 +528,10 @@ extern "C"
         }
         if (carry)
         {
+#if _DEBUG
+            if (z_ptr >= z_ptr_limit)
+                return (FALSE);
+#endif // _DEBUG
             *z_ptr = 1;
             ++z_ptr;
         }
@@ -374,9 +543,8 @@ extern "C"
         else
         {
         }
-        while (z_ptr > z && *(z_ptr - 1) == 0)
-            --z_ptr;
-        *z_length = (z_ptr - (unsigned __int64 *)z) * sizeof(unsigned __int64);
+        *z_length = (unsigned char*)z_ptr - (unsigned char*)z;
+        return (TRUE);
     }
 
     // ・x, y, zはNULLではないこと。
@@ -384,8 +552,23 @@ extern "C"
     // ・x_lengthおよびy_lengthは sizeof(unsigned __int64) の倍数であること。
     // ・x_length >= y_length であること。
     // ・z_lengthはNULLではないこと。
-    void __stdcall _UM_Add_ADCX64(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
+    int __stdcall _UM_Add_ADCX64(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
+#if _DEBUG
+        if (x == NULL)
+            return (FALSE);
+        if (y == NULL)
+            return (FALSE);
+        if (z == NULL)
+            return (FALSE);
+        if (z_length == NULL)
+            return (FALSE);
+        if (x_length < y_length)
+            return (FALSE);
+        if (*z_length < x_length)
+            return (FALSE);
+        unsigned __int64* z_ptr_limit = (unsigned __int64*)((unsigned char*)z + *z_length);
+#endif // _DEBUG
         unsigned __int64* x_ptr = (unsigned __int64*)x;
         unsigned __int64* y_ptr = (unsigned __int64*)y;
         unsigned __int64* z_ptr = (unsigned __int64*)z;
@@ -433,6 +616,10 @@ extern "C"
         }
         if (carry)
         {
+#if _DEBUG
+            if (z_ptr >= z_ptr_limit)
+                return (FALSE);
+#endif // _DEBUG
             *z_ptr = 1;
             ++z_ptr;
         }
@@ -444,13 +631,26 @@ extern "C"
         else
         {
         }
-        while (z_ptr > z && *(z_ptr - 1) == 0)
-            --z_ptr;
-        *z_length = (z_ptr - (unsigned __int64 *)z) * sizeof(unsigned __int64);
+        *z_length = (unsigned char*)z_ptr - (unsigned char*)z;
+        return (TRUE);
     }
 #endif
 
-    static void (__stdcall *_UM_EntryPoint_Add)(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length) = _UM_Add_ADC32;
+    size_t _NormalizeBufferSize(const void* buffer, size_t size)
+    {
+#ifdef _IX64
+        unsigned __int64* p1 = (unsigned __int64*)buffer;
+        unsigned __int64* p2 = (unsigned __int64*)((unsigned char*)buffer + size);
+#else // _IX64
+        unsigned __int32* p1 = (unsigned __int32*)buffer;
+        unsigned __int32* p2 = (unsigned __int32*)((unsigned char*)buffer + size);
+#endif // _IX64
+        while (p2 > p1 && *(p2 - 1) == 0)
+            --p2;
+        return ((unsigned char*)p2 - (unsigned char*)p1);
+    }
+
+    static int(__stdcall *_UM_EntryPoint_Add)(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length) = _UM_Add_ADC32;
 
     __declspec(dllexport) int __stdcall UM_Initialize()
     {
@@ -486,41 +686,46 @@ extern "C"
             }
         }
         return (TRUE);
-    }
 #else
         return (FALSE);
 #endif
-
-    __declspec(dllexport) void* __stdcall UM_AllocateBuffer(size_t size, size_t* actual_size)
-    {
-        return (_AllocateBuffer(size, actual_size));
     }
 
-    __declspec(dllexport) void* __stdcall UM_FromUint32(unsigned __int32 value, size_t* buffer_size)
+    __declspec(dllexport) void* __stdcall UM_AllocateBuffer(size_t size)
     {
-        unsigned __int32* buffer = (unsigned __int32*)_AllocateBuffer(sizeof(unsigned __int32), buffer_size);
-        *buffer = value;
+        return (_AllocateBuffer(size));
+    }
+
+    __declspec(dllexport) int __stdcall UM_SetUint32Value(void* buffer, size_t* buffer_size, unsigned __int32 value)
+    {
         if (value == 0)
+        {
             *buffer_size = 0;
-        return (buffer);
+            return (TRUE);
+        }
+        return (_UM_SetUint32Value_Imp(buffer, buffer_size, value));
     }
 
-    __declspec(dllexport) void* __stdcall UM_FromUint64(unsigned __int64 value, size_t* buffer_size)
+    __declspec(dllexport) int __stdcall UM_SetUint64Value(void* buffer, size_t* buffer_size, unsigned __int64 value)
     {
+        if (value == 0)
+        {
+            *buffer_size = 0;
+            return (TRUE);
+        }
+        else
+        {
 #ifdef _IX64
-        unsigned __int64* buffer = (unsigned __int64*)_AllocateBuffer(sizeof(unsigned __int32), buffer_size);
-        *buffer = value;
-        if (value == 0)
-            *buffer_size = 0;
-        return (buffer);
+            return (_UM_SetUint64Value_Imp_x64(buffer, buffer_size, value));
 #else // _IX64
-        unsigned __int32* buffer = (unsigned __int32*)_AllocateBuffer(sizeof(unsigned __int32) * 2, buffer_size);
-        buffer[0] = (unsigned __int32)value;
-        buffer[1] = (unsigned __int32)(value>> 32);
-        if (value == 0)
-            *buffer_size = 0;
-        return (buffer);
+            unsigned __int32 value_low = (unsigned __int32)value;
+            unsigned __int32 value_high = (unsigned __int32)(value >> 32);
+            if (value_high == 0)
+                return (_UM_SetUint32Value_Imp(buffer, buffer_size, value_low));
+            else
+                return (_UM_SetUint64Value_Imp_x86(buffer, buffer_size, value_high, value_low));
 #endif // _IX64
+        }
     }
 
     __declspec(dllexport) void __stdcall UM_FreeBuffer(void* p)
@@ -528,11 +733,57 @@ extern "C"
         _aligned_free(p);
     }
 
-    __declspec(dllexport) void __stdcall UM_Add(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
+    __declspec(dllexport) int __stdcall UM_Add(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
-        if (x_length >= y_length)
-            (*_UM_EntryPoint_Add)(x, x_length, y, y_length, z, z_length);
+        if (x_length == 0)
+        {
+            if (y_length == 0)
+            {
+                *z_length = 0;
+                return (TRUE);
+            }
+            else
+            {
+                if (*z_length < y_length)
+                    return (FALSE);
+#ifdef _IX64
+                __movsq((DWORD64*)z, (DWORD64*)y, y_length / sizeof(unsigned __int64));
+#else // _IX64
+                __movsd((unsigned long*)z, (unsigned long*)y, y_length / sizeof(unsigned long));
+#endif // _IX64
+                *z_length = _NormalizeBufferSize(z, y_length);
+                return (TRUE);
+            }
+        }
         else
-            (*_UM_EntryPoint_Add)(y, y_length, x, x_length, z, z_length);
+        {
+            if (y_length == 0)
+            {
+                if (*z_length < x_length)
+                    return (FALSE);
+#ifdef _IX64
+                __movsq((DWORD64*)z, (DWORD64*)x, x_length / sizeof(unsigned __int64));
+#else // _IX64
+                __movsd((unsigned long*)z, (unsigned long*)x, x_length / sizeof(unsigned long));
+#endif // _IX64
+                *z_length = _NormalizeBufferSize(z, x_length);
+                return (TRUE);
+            }
+            else
+            {
+                if (x_length >= y_length)
+                {
+                    if (!(*_UM_EntryPoint_Add)(x, x_length, y, y_length, z, z_length))
+                        return (FALSE);
+                }
+                else
+                {
+                    if (!(*_UM_EntryPoint_Add)(y, y_length, x, x_length, z, z_length))
+                        return (FALSE);
+                }
+                *z_length = _NormalizeBufferSize(z, *z_length);
+                return (TRUE);
+            }
+        }
+            }
     }
-}
