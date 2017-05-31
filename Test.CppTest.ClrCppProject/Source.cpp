@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 Source.cpp
 
 Copyright (c) 2017 Palmtree Software
@@ -7,10 +7,10 @@ This software is released under the MIT License.
 https://opensource.org/licenses/MIT
 */
 
-// CPUID‚É‚Â‚¢‚Ä:
+// CPUIDã«ã¤ã„ã¦:
 //   http://www.wdic.org/w/SCI/cpuid%20%28x86%29
-// ‘g‚İ‚İŠÖ”‚É‚Â‚¢‚Ä:
-//   https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=Other // –{‰Æ(‰pŒê)
+// çµ„ã¿è¾¼ã¿é–¢æ•°ã«ã¤ã„ã¦:
+//   https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=Other // æœ¬å®¶(è‹±èª)
 //   https://msdn.microsoft.com/ja-jp/library/hh977023.aspx // MS
 
 #include <windows.h>
@@ -19,134 +19,134 @@ https://opensource.org/licenses/MIT
 #include <immintrin.h>
 
 /*
-unsigned __int64 _byteswap_uint64(_In_ unsigned __int64) // ƒoƒCƒgƒI[ƒ_[•ÏŠ·(64bit)
-unsigned long _byteswap_ulong(_In_ unsigned long) // ƒoƒCƒgƒI[ƒ_[•ÏŠ·(32bit)
-unsigned short _byteswap_ushort(_In_ unsigned short) // ƒoƒCƒgƒI[ƒ_[•ÏŠ·(16bit)
+unsigned __int64 _byteswap_uint64(_In_ unsigned __int64) // ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼å¤‰æ›(64bit)
+unsigned long _byteswap_ulong(_In_ unsigned long) // ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼å¤‰æ›(32bit)
+unsigned short _byteswap_ushort(_In_ unsigned short) // ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼å¤‰æ›(16bit)
 
-void __movsb(unsigned char *, unsigned char const *, size_t) // ƒƒ‚ƒŠˆÚ“®(8bit)
-void __movsw(unsigned short *, unsigned short const *, size_t) // ƒƒ‚ƒŠˆÚ“®(16bit)
-void __movsd(unsigned long *, unsigned long const *, size_t) // ƒƒ‚ƒŠˆÚ“®(32bit)
+void __movsb(unsigned char *, unsigned char const *, size_t) // ãƒ¡ãƒ¢ãƒªç§»å‹•(8bit)
+void __movsw(unsigned short *, unsigned short const *, size_t) // ãƒ¡ãƒ¢ãƒªç§»å‹•(16bit)
+void __movsd(unsigned long *, unsigned long const *, size_t) // ãƒ¡ãƒ¢ãƒªç§»å‹•(32bit)
 
-void __stosb(unsigned char *, unsigned char, size_t) // ƒƒ‚ƒŠİ’è(8bit)
-void __stosw(unsigned short *, unsigned short, size_t) // ƒƒ‚ƒŠİ’è(16bit)
-void __stosd(unsigned long *, unsigned long, size_t) // ƒƒ‚ƒŠİ’è(32bit)
+void __stosb(unsigned char *, unsigned char, size_t) // ãƒ¡ãƒ¢ãƒªè¨­å®š(8bit)
+void __stosw(unsigned short *, unsigned short, size_t) // ãƒ¡ãƒ¢ãƒªè¨­å®š(16bit)
+void __stosd(unsigned long *, unsigned long, size_t) // ãƒ¡ãƒ¢ãƒªè¨­å®š(32bit)
 
-unsigned char _addcarry_u8(unsigned char, unsigned char, unsigned char, unsigned char *) // 8ƒrƒbƒg•„†‚È‚µ®”‚ÌƒLƒƒƒŠ[•t‰ÁZ
-unsigned char _addcarry_u16(unsigned char, unsigned short, unsigned short, unsigned short *) // 16ƒrƒbƒg•„†‚È‚µ®”‚ÌƒLƒƒƒŠ[•t‰ÁZ
-unsigned char _addcarry_u32(unsigned char, unsigned int, unsigned int, unsigned int *) // 32ƒrƒbƒg•„†‚È‚µ®”‚ÌƒLƒƒƒŠ[•t‰ÁZ
+unsigned char _addcarry_u8(unsigned char, unsigned char, unsigned char, unsigned char *) // 8ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ã‚­ãƒ£ãƒªãƒ¼ä»˜åŠ ç®—
+unsigned char _addcarry_u16(unsigned char, unsigned short, unsigned short, unsigned short *) // 16ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ã‚­ãƒ£ãƒªãƒ¼ä»˜åŠ ç®—
+unsigned char _addcarry_u32(unsigned char, unsigned int, unsigned int, unsigned int *) // 32ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ã‚­ãƒ£ãƒªãƒ¼ä»˜åŠ ç®—
 
-unsigned char _subborrow_u8(unsigned char, unsigned char, unsigned char, unsigned char *) // 8ƒrƒbƒg•„†‚È‚µ®”‚Ìƒ{ƒ[•tŒ¸Z
-unsigned char _subborrow_u16(unsigned char, unsigned short, unsigned short, unsigned short *) // 8ƒrƒbƒg•„†‚È‚µ®”‚Ìƒ{ƒ[•tŒ¸Z
-unsigned char _subborrow_u32(unsigned char, unsigned int, unsigned int, unsigned int *) // 8ƒrƒbƒg•„†‚È‚µ®”‚Ìƒ{ƒ[•tŒ¸Z
+unsigned char _subborrow_u8(unsigned char, unsigned char, unsigned char, unsigned char *) // 8ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ãƒœãƒ­ãƒ¼ä»˜æ¸›ç®—
+unsigned char _subborrow_u16(unsigned char, unsigned short, unsigned short, unsigned short *) // 8ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ãƒœãƒ­ãƒ¼ä»˜æ¸›ç®—
+unsigned char _subborrow_u32(unsigned char, unsigned int, unsigned int, unsigned int *) // 8ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ãƒœãƒ­ãƒ¼ä»˜æ¸›ç®—
 
-__int64 __emul(int, int) // •„†•tæZ(32bit * 32bit => 64bit)
-unsigned __int64 __emulu(unsigned int, unsigned int) // •„†‚È‚µæZ(32bit * 32bit => 64bit)
+__int64 __emul(int, int) // ç¬¦å·ä»˜ä¹—ç®—(32bit * 32bit => 64bit)
+unsigned __int64 __emulu(unsigned int, unsigned int) // ç¬¦å·ãªã—ä¹—ç®—(32bit * 32bit => 64bit)
 
-unsigned char _BitScanForward(unsigned long * _Index, unsigned long _Mask) // LSB‚©‚çMSB‚ÉŒü‚©‚Á‚Äƒrƒbƒg1‚ğŒŸõ‚·‚é
-unsigned char _BitScanReverse(unsigned long * _Index, unsigned long _Mask) // MSB‚©‚çLSB‚ÉŒü‚©‚Á‚Äƒrƒbƒg1‚ğŒŸõ‚·‚é
+unsigned char _BitScanForward(unsigned long * _Index, unsigned long _Mask) // LSBã‹ã‚‰MSBã«å‘ã‹ã£ã¦ãƒ“ãƒƒãƒˆ1ã‚’æ¤œç´¢ã™ã‚‹
+unsigned char _BitScanReverse(unsigned long * _Index, unsigned long _Mask) // MSBã‹ã‚‰LSBã«å‘ã‹ã£ã¦ãƒ“ãƒƒãƒˆ1ã‚’æ¤œç´¢ã™ã‚‹
 
-unsigned char _rotl8(unsigned char _Value, unsigned char _Shift) // 8ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
-unsigned short _rotl16(unsigned short _Value, unsigned char _Shift) // 16ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
-unsigned int _rotl(_In_ unsigned int _Value, _In_ int _Shift) // 32ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
-unsigned __int64 _rotl64(_In_ unsigned __int64 _Value, _In_ int _Shift) // 64ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
+unsigned char _rotl8(unsigned char _Value, unsigned char _Shift) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
+unsigned short _rotl16(unsigned short _Value, unsigned char _Shift) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
+unsigned int _rotl(_In_ unsigned int _Value, _In_ int _Shift) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
+unsigned __int64 _rotl64(_In_ unsigned __int64 _Value, _In_ int _Shift) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
 
-unsigned char _rotr8(unsigned char _Value, unsigned char _Shift) // 8ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
-unsigned short _rotr16(unsigned short _Value, unsigned char _Shift) // 16ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
-unsigned int _rotr(_In_ unsigned int _Value, _In_ int _Shift) // ƒrƒbƒg®”‚Ì‰Eƒ[ƒe[ƒg
-unsigned __int64 _rotr64(_In_ unsigned __int64 _Value, _In_ int _Shift) // 64ƒrƒbƒg®”‚Ì‰Eƒ[ƒe[ƒg
+unsigned char _rotr8(unsigned char _Value, unsigned char _Shift) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
+unsigned short _rotr16(unsigned short _Value, unsigned char _Shift) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
+unsigned int _rotr(_In_ unsigned int _Value, _In_ int _Shift) // ãƒ“ãƒƒãƒˆæ•´æ•°ã®å³ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
+unsigned __int64 _rotr64(_In_ unsigned __int64 _Value, _In_ int _Shift) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®å³ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
 
-unsigned long _lrotl(_In_ unsigned long, _In_ int) // 32ƒrƒbƒg®”‚Ì¶ƒ[ƒe[ƒg
+unsigned long _lrotl(_In_ unsigned long, _In_ int) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®å·¦ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
 
-unsigned long _lrotr(_In_ unsigned long, _In_ int) // 32ƒrƒbƒg®”‚Ì‰Eƒ[ƒe[ƒg
+unsigned long _lrotr(_In_ unsigned long, _In_ int) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®å³ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆ
 
-__int64 __ll_rshift(__int64, int) // •„†•t64bit®”‚Ì‰EƒVƒtƒg
-unsigned __int64 __ull_rshift(unsigned __int64, int) // •„†‚È‚µ64bit®”‚Ì‰EƒVƒtƒg
-unsigned __int64 __ll_lshift(unsigned __int64, int) // •„†•t64bit®”‚Ì¶ƒVƒtƒg
+__int64 __ll_rshift(__int64, int) // ç¬¦å·ä»˜64bitæ•´æ•°ã®å³ã‚·ãƒ•ãƒˆ
+unsigned __int64 __ull_rshift(unsigned __int64, int) // ç¬¦å·ãªã—64bitæ•´æ•°ã®å³ã‚·ãƒ•ãƒˆ
+unsigned __int64 __ll_lshift(unsigned __int64, int) // ç¬¦å·ä»˜64bitæ•´æ•°ã®å·¦ã‚·ãƒ•ãƒˆ
 
-unsigned char _bittest(long const *, long) // 32ƒrƒbƒg®”‚ÌƒrƒbƒgŒŸ¸
-unsigned char _bittestandset(long *, long) // 32ƒrƒbƒg®”‚ÌƒrƒbƒgŒŸ¸‚¨‚æ‚ÑƒZƒbƒg
-unsigned char _bittestandreset(long *, long) // 32ƒrƒbƒg®”‚ÌƒrƒbƒgŒŸ¸‚¨‚æ‚ÑƒŠƒZƒbƒg
-unsigned char _bittestandcomplement(long *, long) // 32ƒrƒbƒg®”‚ÌƒrƒbƒgŒŸ¸‚¨‚æ‚Ñ”½“]
+unsigned char _bittest(long const *, long) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ãƒ“ãƒƒãƒˆæ¤œæŸ»
+unsigned char _bittestandset(long *, long) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ãƒ“ãƒƒãƒˆæ¤œæŸ»ãŠã‚ˆã³ã‚»ãƒƒãƒˆ
+unsigned char _bittestandreset(long *, long) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ãƒ“ãƒƒãƒˆæ¤œæŸ»ãŠã‚ˆã³ãƒªã‚»ãƒƒãƒˆ
+unsigned char _bittestandcomplement(long *, long) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ãƒ“ãƒƒãƒˆæ¤œæŸ»ãŠã‚ˆã³åè»¢
 
-unsigned short __lzcnt16(unsigned short) // 16ƒrƒbƒg®”‚ÅAMSB‚ğŠÜ‚Ş˜A‘±‚µ‚½ƒrƒbƒg0‚Ì”‚ğ”‚¦‚é
-unsigned int __lzcnt(unsigned int) // 32ƒrƒbƒg®”‚ÅAMSB‚ğŠÜ‚Ş˜A‘±‚µ‚½ƒrƒbƒg0‚Ì”‚ğ”‚¦‚é
+unsigned short __lzcnt16(unsigned short) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã§ã€MSBã‚’å«ã‚€é€£ç¶šã—ãŸãƒ“ãƒƒãƒˆ0ã®æ•°ã‚’æ•°ãˆã‚‹
+unsigned int __lzcnt(unsigned int) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã§ã€MSBã‚’å«ã‚€é€£ç¶šã—ãŸãƒ“ãƒƒãƒˆ0ã®æ•°ã‚’æ•°ãˆã‚‹
 
-unsigned short __popcnt16(unsigned short) // 16ƒrƒbƒg®”‚ÅA1‚Å‚ ‚éƒrƒbƒg‚Ì”‚ğ”‚¦‚é
-unsigned int __popcnt(unsigned int) // 32ƒrƒbƒg®”‚ÅA1‚Å‚ ‚éƒrƒbƒg‚Ì”‚ğ”‚¦‚é
+unsigned short __popcnt16(unsigned short) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã§ã€1ã§ã‚ã‚‹ãƒ“ãƒƒãƒˆã®æ•°ã‚’æ•°ãˆã‚‹
+unsigned int __popcnt(unsigned int) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã§ã€1ã§ã‚ã‚‹ãƒ“ãƒƒãƒˆã®æ•°ã‚’æ•°ãˆã‚‹
 
-char _InterlockedAnd8(char volatile * _Value, char _Mask) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z
-short _InterlockedAnd16(short volatile * _Value, short _Mask) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z
-long _InterlockedAnd(long volatile * _Value, long _Mask) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z
+char _InterlockedAnd8(char volatile * _Value, char _Mask) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—
+short _InterlockedAnd16(short volatile * _Value, short _Mask) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—
+long _InterlockedAnd(long volatile * _Value, long _Mask) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—
 
-char _InterlockedCompareExchange8(char volatile * _Destination, char _Exchange, char _Comparand) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·
-short _InterlockedCompareExchange16(short volatile * _Destination, short _Exchange, short _Comparand) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·
-long _InterlockedCompareExchange(long volatile * _Destination, long _Exchange, long _Comparand) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·
-__int64 _InterlockedCompareExchange64(__int64 volatile * _Destination, __int64 _Exchange, __int64 _Comparand) // 64ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·
+char _InterlockedCompareExchange8(char volatile * _Destination, char _Exchange, char _Comparand) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›
+short _InterlockedCompareExchange16(short volatile * _Destination, short _Exchange, short _Comparand) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›
+long _InterlockedCompareExchange(long volatile * _Destination, long _Exchange, long _Comparand) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›
+__int64 _InterlockedCompareExchange64(__int64 volatile * _Destination, __int64 _Exchange, __int64 _Comparand) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›
 
-short _InterlockedDecrement16(short volatile * _Addend) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈƒfƒNƒŠƒƒ“ƒg
-long _InterlockedDecrement(long volatile * _Addend) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈƒfƒNƒŠƒƒ“ƒg
+short _InterlockedDecrement16(short volatile * _Addend) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
+long _InterlockedDecrement(long volatile * _Addend) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 
-char _InterlockedExchange8(char volatile * _Target, char _Value) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈŒğŠ·
-short _InterlockedExchange16(short volatile * _Target, short _Value) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈŒğŠ·
-long _InterlockedExchange(long volatile * _Target, long _Value) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈŒğŠ·
+char _InterlockedExchange8(char volatile * _Target, char _Value) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªäº¤æ›
+short _InterlockedExchange16(short volatile * _Target, short _Value) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªäº¤æ›
+long _InterlockedExchange(long volatile * _Target, long _Value) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªäº¤æ›
 
-char _InterlockedExchangeAdd8(char volatile * _Addend, char _Value) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈŒğŠ·‚¨‚æ‚Ñ‰ÁZ
-short _InterlockedExchangeAdd16(short volatile * _Addend, short _Value) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈŒğŠ·‚¨‚æ‚Ñ‰ÁZ
-long _InterlockedExchangeAdd(long volatile * _Addend, long _Value) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈŒğŠ·‚¨‚æ‚Ñ‰ÁZ
+char _InterlockedExchangeAdd8(char volatile * _Addend, char _Value) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªäº¤æ›ãŠã‚ˆã³åŠ ç®—
+short _InterlockedExchangeAdd16(short volatile * _Addend, short _Value) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªäº¤æ›ãŠã‚ˆã³åŠ ç®—
+long _InterlockedExchangeAdd(long volatile * _Addend, long _Value) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªäº¤æ›ãŠã‚ˆã³åŠ ç®—
 
-short _InterlockedIncrement16(short volatile * _Addend) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈƒCƒ“ƒNƒŠƒƒ“ƒg
-long _InterlockedIncrement(long volatile * _Addend) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈƒCƒ“ƒNƒŠƒƒ“ƒg
+short _InterlockedIncrement16(short volatile * _Addend) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
+long _InterlockedIncrement(long volatile * _Addend) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 
-char _InterlockedOr8(char volatile * _Value, char _Mask) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z
-short _InterlockedOr16(short volatile * _Value, short _Mask) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z
-long _InterlockedOr(long volatile * _Value, long _Mask) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z
+char _InterlockedOr8(char volatile * _Value, char _Mask) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—
+short _InterlockedOr16(short volatile * _Value, short _Mask) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—
+long _InterlockedOr(long volatile * _Value, long _Mask) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—
 
-char _InterlockedXor8(char volatile * _Value, char _Mask) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z
-short _InterlockedXor16(short volatile * _Value, short _Mask) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z
-long _InterlockedXor(long volatile * _Value, long _Mask) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z
+char _InterlockedXor8(char volatile * _Value, char _Mask) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—
+short _InterlockedXor16(short volatile * _Value, short _Mask) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—
+long _InterlockedXor(long volatile * _Value, long _Mask) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—
 
-unsigned char _interlockedbittestandset(long volatile *, long) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈƒrƒbƒgŒŸ¸‚¨‚æ‚ÑƒZƒbƒg
-unsigned char _interlockedbittestandreset(long volatile *, long) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈƒrƒbƒgŒŸ¸‚¨‚æ‚ÑƒŠƒZƒbƒg
+unsigned char _interlockedbittestandset(long volatile *, long) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªãƒ“ãƒƒãƒˆæ¤œæŸ»ãŠã‚ˆã³ã‚»ãƒƒãƒˆ
+unsigned char _interlockedbittestandreset(long volatile *, long) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªãƒ“ãƒƒãƒˆæ¤œæŸ»ãŠã‚ˆã³ãƒªã‚»ãƒƒãƒˆ
 
-// ˆÈ~Ax64‚Ì‚İ
+// ä»¥é™ã€x64ã®ã¿
 
-void __movsq(unsigned long long *, unsigned long long const *, size_t) // ƒƒ‚ƒŠˆÚ“®(64bit)
-void __stosq(unsigned __int64 *, unsigned __int64, size_t) // ƒƒ‚ƒŠİ’è(64bit)
+void __movsq(unsigned long long *, unsigned long long const *, size_t) // ãƒ¡ãƒ¢ãƒªç§»å‹•(64bit)
+void __stosq(unsigned __int64 *, unsigned __int64, size_t) // ãƒ¡ãƒ¢ãƒªè¨­å®š(64bit)
 
-unsigned char _addcarry_u64(unsigned char, unsigned __int64, unsigned __int64, unsigned __int64 *) // 64ƒrƒbƒg•„†‚È‚µ®”‚ÌƒLƒƒƒŠ[•t‰ÁZ
-unsigned char _subborrow_u64(unsigned char, unsigned __int64, unsigned __int64, unsigned __int64 *) // 64ƒrƒbƒg•„†‚È‚µ®”‚Ìƒ{ƒ[•tŒ¸Z
+unsigned char _addcarry_u64(unsigned char, unsigned __int64, unsigned __int64, unsigned __int64 *) // 64ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ã‚­ãƒ£ãƒªãƒ¼ä»˜åŠ ç®—
+unsigned char _subborrow_u64(unsigned char, unsigned __int64, unsigned __int64, unsigned __int64 *) // 64ãƒ“ãƒƒãƒˆç¬¦å·ãªã—æ•´æ•°ã®ãƒœãƒ­ãƒ¼ä»˜æ¸›ç®—
 
-__int64 _mul128(__int64 _Multiplier, __int64 _Multiplicand, __int64 * _HighProduct) // •„†•tæZ(64bit * 64bit => 128bit)
-unsigned __int64 _umul128(unsigned __int64 _Multiplier, unsigned __int64 _Multiplicand, unsigned __int64 * _HighProduct) // •„†‚È‚µæZ(64bit * 64bit => 128bit)
+__int64 _mul128(__int64 _Multiplier, __int64 _Multiplicand, __int64 * _HighProduct) // ç¬¦å·ä»˜ä¹—ç®—(64bit * 64bit => 128bit)
+unsigned __int64 _umul128(unsigned __int64 _Multiplier, unsigned __int64 _Multiplicand, unsigned __int64 * _HighProduct) // ç¬¦å·ãªã—ä¹—ç®—(64bit * 64bit => 128bit)
 
-unsigned char _BitScanForward64(unsigned long * _Index, unsigned __int64 _Mask) // LSB‚©‚çMSB‚ÉŒü‚©‚Á‚Äƒrƒbƒg1‚ğŒŸõ‚·‚é
-unsigned char _BitScanReverse64(unsigned long * _Index, unsigned __int64 _Mask) // MSB‚©‚çLSB‚ÉŒü‚©‚Á‚Äƒrƒbƒg1‚ğŒŸõ‚·‚é
+unsigned char _BitScanForward64(unsigned long * _Index, unsigned __int64 _Mask) // LSBã‹ã‚‰MSBã«å‘ã‹ã£ã¦ãƒ“ãƒƒãƒˆ1ã‚’æ¤œç´¢ã™ã‚‹
+unsigned char _BitScanReverse64(unsigned long * _Index, unsigned __int64 _Mask) // MSBã‹ã‚‰LSBã«å‘ã‹ã£ã¦ãƒ“ãƒƒãƒˆ1ã‚’æ¤œç´¢ã™ã‚‹
 
-unsigned __int64 __shiftleft128(unsigned __int64 _LowPart, unsigned __int64 _HighPart, unsigned char _Shift) // •„†‚È‚µ128bit®”‚Ì‰EƒVƒtƒg
-unsigned __int64 __shiftright128(unsigned __int64 _LowPart, unsigned __int64 _HighPart, unsigned char _Shift) // •„†‚È‚µ128bit®”‚Ì¶ƒVƒtƒg
+unsigned __int64 __shiftleft128(unsigned __int64 _LowPart, unsigned __int64 _HighPart, unsigned char _Shift) // ç¬¦å·ãªã—128bitæ•´æ•°ã®å³ã‚·ãƒ•ãƒˆ
+unsigned __int64 __shiftright128(unsigned __int64 _LowPart, unsigned __int64 _HighPart, unsigned char _Shift) // ç¬¦å·ãªã—128bitæ•´æ•°ã®å·¦ã‚·ãƒ•ãƒˆ
 
-unsigned __int64 __lzcnt64(unsigned __int64) // 64ƒrƒbƒg®”‚ÅAMSB‚ğŠÜ‚Ş˜A‘±‚µ‚½ƒrƒbƒg0‚Ì”‚ğ”‚¦‚é
-unsigned __int64 __popcnt64(unsigned __int64) // 64ƒrƒbƒg®”‚ÅA1‚Å‚ ‚éƒrƒbƒg‚Ì”‚ğ”‚¦‚é
+unsigned __int64 __lzcnt64(unsigned __int64) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã§ã€MSBã‚’å«ã‚€é€£ç¶šã—ãŸãƒ“ãƒƒãƒˆ0ã®æ•°ã‚’æ•°ãˆã‚‹
+unsigned __int64 __popcnt64(unsigned __int64) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã§ã€1ã§ã‚ã‚‹ãƒ“ãƒƒãƒˆã®æ•°ã‚’æ•°ãˆã‚‹
 
-char _InterlockedAnd8_np(char volatile * _Value, char _Mask) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-short _InterlockedAnd16_np(short volatile * _Value, short _Mask) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-long _InterlockedAnd_np(long volatile * _Value, long _Mask) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-__int64 _InterlockedAnd64_np(__int64 volatile * _Value, __int64 _Mask) // 64ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈAND‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
+char _InterlockedAnd8_np(char volatile * _Value, char _Mask) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+short _InterlockedAnd16_np(short volatile * _Value, short _Mask) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+long _InterlockedAnd_np(long volatile * _Value, long _Mask) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+__int64 _InterlockedAnd64_np(__int64 volatile * _Value, __int64 _Mask) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªANDæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
 
-short _InterlockedCompareExchange16_np(short volatile * _Destination, short _Exchange, short _Comparand) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-long _InterlockedCompareExchange_np(long volatile * _Destination, long _Exchange, long _Comparand) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-__int64 _InterlockedCompareExchange64_np(__int64 volatile * _Destination, __int64 _Exchange, __int64 _Comparand) // 64ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-unsigned char _InterlockedCompareExchange128_np(__int64 volatile * _Destination, __int64 _ExchangeHigh, __int64 _ExchangeLow, __int64 * _ComparandResult) // 128ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚È”äŠr‚¨‚æ‚ÑŒğŠ·(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
+short _InterlockedCompareExchange16_np(short volatile * _Destination, short _Exchange, short _Comparand) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+long _InterlockedCompareExchange_np(long volatile * _Destination, long _Exchange, long _Comparand) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+__int64 _InterlockedCompareExchange64_np(__int64 volatile * _Destination, __int64 _Exchange, __int64 _Comparand) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+unsigned char _InterlockedCompareExchange128_np(__int64 volatile * _Destination, __int64 _ExchangeHigh, __int64 _ExchangeLow, __int64 * _ComparandResult) // 128ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªæ¯”è¼ƒãŠã‚ˆã³äº¤æ›(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
 
-char _InterlockedOr8_np(char volatile * _Value, char _Mask) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-short _InterlockedOr16_np(short volatile * _Value, short _Mask) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-long _InterlockedOr_np(long volatile * _Value, long _Mask) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-__int64 _InterlockedOr64_np(__int64 volatile * _Value, __int64 _Mask) // 64ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
+char _InterlockedOr8_np(char volatile * _Value, char _Mask) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+short _InterlockedOr16_np(short volatile * _Value, short _Mask) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+long _InterlockedOr_np(long volatile * _Value, long _Mask) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+__int64 _InterlockedOr64_np(__int64 volatile * _Value, __int64 _Mask) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
 
-char _InterlockedXor8_np(char volatile * _Value, char _Mask) // 8ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-short _InterlockedXor16_np(short volatile * _Value, short _Mask) // 16ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-long _InterlockedXor_np(long volatile * _Value, long _Mask) // 32ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
-__int64 _InterlockedXor64_np(__int64 volatile * _Value, __int64 _Mask) // 64ƒrƒbƒg®”‚ÌƒAƒgƒ~ƒbƒN‚ÈXOR‰‰Z(ƒvƒŠƒtƒFƒbƒ`‚È‚µ)
+char _InterlockedXor8_np(char volatile * _Value, char _Mask) // 8ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+short _InterlockedXor16_np(short volatile * _Value, short _Mask) // 16ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+long _InterlockedXor_np(long volatile * _Value, long _Mask) // 32ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
+__int64 _InterlockedXor64_np(__int64 volatile * _Value, __int64 _Mask) // 64ãƒ“ãƒƒãƒˆæ•´æ•°ã®ã‚¢ãƒˆãƒŸãƒƒã‚¯ãªXORæ¼”ç®—(ãƒ—ãƒªãƒ•ã‚§ãƒƒãƒãªã—)
 
 */
 
@@ -287,11 +287,11 @@ extern "C"
     }
 #endif // _IX64
 
-    // Ex, y, z‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
-    // Ex, y, z‚Í unsigned __int32‚Ì ƒAƒ‰ƒCƒƒ“ƒgğŒ‚ğ–‚½‚µ‚Ä‚¢‚é‚±‚ÆB
-    // Ex_length‚¨‚æ‚Ñy_length‚Í sizeof(unsigned long) ‚Ì”{”‚Å‚ ‚é‚±‚ÆB
-    // Ex_length >= y_length ‚Å‚ ‚é‚±‚ÆB
-    // Ez_length‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
+    // ãƒ»x, y, zã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
+    // ãƒ»x, y, zã¯ unsigned __int32ã® ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆæ¡ä»¶ã‚’æº€ãŸã—ã¦ã„ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_lengthãŠã‚ˆã³y_lengthã¯ sizeof(unsigned long) ã®å€æ•°ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_length >= y_length ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»z_lengthã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
     int __stdcall _UM_Add_ADC32(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
 #if _DEBUG
@@ -375,11 +375,11 @@ extern "C"
         return (TRUE);
     }
 
-    // Ex, y, z‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
-    // Ex, y, z‚Í unsigned __int32‚Ì ƒAƒ‰ƒCƒƒ“ƒgğŒ‚ğ–‚½‚µ‚Ä‚¢‚é‚±‚ÆB
-    // Ex_length‚¨‚æ‚Ñy_length‚Í sizeof(unsigned __int32) ‚Ì”{”‚Å‚ ‚é‚±‚ÆB
-    // Ex_length >= y_length ‚Å‚ ‚é‚±‚ÆB
-    // Ez_length‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
+    // ãƒ»x, y, zã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
+    // ãƒ»x, y, zã¯ unsigned __int32ã® ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆæ¡ä»¶ã‚’æº€ãŸã—ã¦ã„ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_lengthãŠã‚ˆã³y_lengthã¯ sizeof(unsigned __int32) ã®å€æ•°ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_length >= y_length ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»z_lengthã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
     int __stdcall _UM_Add_ADCX32(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
 #if _DEBUG
@@ -464,11 +464,11 @@ extern "C"
     }
 
 #ifdef _IX64
-    // Ex, y, z‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
-    // Ex, y, z‚Í unsigned __int64‚Ì ƒAƒ‰ƒCƒƒ“ƒgğŒ‚ğ–‚½‚µ‚Ä‚¢‚é‚±‚ÆB
-    // Ex_length‚¨‚æ‚Ñy_length‚Í sizeof(unsigned __int64) ‚Ì”{”‚Å‚ ‚é‚±‚ÆB
-    // Ex_length >= y_length ‚Å‚ ‚é‚±‚ÆB
-    // Ez_length‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
+    // ãƒ»x, y, zã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
+    // ãƒ»x, y, zã¯ unsigned __int64ã® ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆæ¡ä»¶ã‚’æº€ãŸã—ã¦ã„ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_lengthãŠã‚ˆã³y_lengthã¯ sizeof(unsigned __int64) ã®å€æ•°ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_length >= y_length ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»z_lengthã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
     int __stdcall _UM_Add_ADC64(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
 #if _DEBUG
@@ -552,11 +552,11 @@ extern "C"
         return (TRUE);
     }
 
-    // Ex, y, z‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
-    // Ex, y, z‚Í unsigned __int64‚Ì ƒAƒ‰ƒCƒƒ“ƒgğŒ‚ğ–‚½‚µ‚Ä‚¢‚é‚±‚ÆB
-    // Ex_length‚¨‚æ‚Ñy_length‚Í sizeof(unsigned __int64) ‚Ì”{”‚Å‚ ‚é‚±‚ÆB
-    // Ex_length >= y_length ‚Å‚ ‚é‚±‚ÆB
-    // Ez_length‚ÍNULL‚Å‚Í‚È‚¢‚±‚ÆB
+    // ãƒ»x, y, zã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
+    // ãƒ»x, y, zã¯ unsigned __int64ã® ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆæ¡ä»¶ã‚’æº€ãŸã—ã¦ã„ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_lengthãŠã‚ˆã³y_lengthã¯ sizeof(unsigned __int64) ã®å€æ•°ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»x_length >= y_length ã§ã‚ã‚‹ã“ã¨ã€‚
+    // ãƒ»z_lengthã¯NULLã§ã¯ãªã„ã“ã¨ã€‚
     int __stdcall _UM_Add_ADCX64(void* x, size_t x_length, void*  y, size_t y_length, void* z, size_t* z_length)
     {
 #if _DEBUG

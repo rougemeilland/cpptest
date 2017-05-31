@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 Test.CppTest.CppProject.cpp
 
 Copyright (c) 2017 Palmtree Software
@@ -7,10 +7,10 @@ This software is released under the MIT License.
 https://opensource.org/licenses/MIT
 */
 
-// CPUID‚É‚Â‚¢‚Ä:
+// CPUIDã«ã¤ã„ã¦:
 //   http://www.wdic.org/w/SCI/cpuid%20%28x86%29
-// ‘g‚İ‚İŠÖ”‚É‚Â‚¢‚Ä:
-//   https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=Other // –{‰Æ(‰pŒê)
+// çµ„ã¿è¾¼ã¿é–¢æ•°ã«ã¤ã„ã¦:
+//   https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=Other // æœ¬å®¶(è‹±èª)
 //   https://msdn.microsoft.com/ja-jp/library/hh977023.aspx // MS
 
 #include "stdafx.h"
@@ -18,7 +18,7 @@ https://opensource.org/licenses/MIT
 #include <immintrin.h>
 
 
-// ‘g‚İ‚İŠÖ”‚Ì—ûK
+// çµ„ã¿è¾¼ã¿é–¢æ•°ã®ç·´ç¿’
 extern "C"
 {
     unsigned __int64 __stdcall _UM_Mul64_Emuration(unsigned __int64 x, unsigned __int64 y, unsigned __int64 * high_part)
